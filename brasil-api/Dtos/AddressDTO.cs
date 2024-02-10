@@ -2,7 +2,7 @@
 
 namespace brasil_api.Dtos
 {
-    public class AddressResponse
+    public class AddressDTO
     {
 
         public string? Cep { get; set; }
