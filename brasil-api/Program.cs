@@ -13,10 +13,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IAddressService, AddressService>();
-//builder.Services.AddSingleton<IBankService, BankService>();
+builder.Services.AddSingleton<IBankService, BankService>();
 builder.Services.AddSingleton<IBrasilApi, BasilApiRest>();
 
 builder.Services.AddAutoMapper(typeof(AddressMapping));
+
+builder.Services.AddAutoMapper(typeof(BankMappin));
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();

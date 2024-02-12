@@ -1,6 +1,7 @@
 ﻿using brasil_api.Dtos;
 using brasil_api.Interfaces;
 using brasil_api.Models;
+using Microsoft.AspNetCore.Http;
 using System.Dynamic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -13,43 +14,78 @@ namespace brasil_api.Rest
         {
 
             var request = new HttpRequestMessage(HttpMethod.Get, $"https://brasilapi.com.br/api/cep/v1/{code}" );
-            var response = new ResponseGeneric<AddressModel>();
+           
 
             using (var client = new HttpClient())
             {
                 var responseBrasilApi = await client.SendAsync(request);
-                var contentResponde = await responseBrasilApi.Content.ReadAsStringAsync();
-                var objectResponse = JsonSerializer.Deserialize<AddressModel>(contentResponde);
+                var contentResponse = await responseBrasilApi.Content.ReadAsStringAsync();
+                var objectResponse = JsonSerializer.Deserialize<AddressModel>(contentResponse);
 
                 
 
                 if (!responseBrasilApi.IsSuccessStatusCode)
                 {
-                    response.StatusCodeHttp = responseBrasilApi.StatusCode;
-                    response.ErrorReturn = JsonSerializer.Deserialize<ExpandoObject>(contentResponde);
+                    return new ResponseGeneric<AddressModel>()
+                    {
+                        StatusCodeHttp = responseBrasilApi.StatusCode,
+                        ErrorReturn = JsonSerializer.Deserialize<ExpandoObject>(contentResponse)
+                    };
+
                 }
                 else
                 {
-                    response.StatusCodeHttp = responseBrasilApi.StatusCode;
-                    response.ReturnData = objectResponse;
+                    return new ResponseGeneric<AddressModel>()
+                    {
+                        StatusCodeHttp = responseBrasilApi.StatusCode,
+                        ReturnData = objectResponse
+                    };
 
                 }
-
-                return response;
-             
+  
+      
             }
 
 
         }
 
-        public Task<ResponseGeneric<List<BankModel>>> GetAllBanks()
+        public async Task<ResponseGeneric<List<BankModel>>> GetAllBanks()
         {
-            throw new NotImplementedException();
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://brasilapi.com.br/api/banks/v1");
+            var response = new ResponseGeneric<List<BankModel>>();
+
+            using (var client = new HttpClient())
+            {
+                var responseBrasilApi = await client.SendAsync(request);
+                var banksResponse = await responseBrasilApi.Content.ReadAsStringAsync();
+                var arrayResponse = JsonSerializer.Deserialize<List<BankModel>>(banksResponse);
+
+                List<BankModel> banks = new();
+
+                try
+                {
+                    
+                    response.StatusCodeHttp = responseBrasilApi.StatusCode;
+                    response.ReturnData = arrayResponse;
+                }
+                catch (Exception ex)
+                {
+                   
+                    response.StatusCodeHttp = responseBrasilApi.StatusCode;
+                    response.ErrorReturn = JsonSerializer.Deserialize<ExpandoObject>(banksResponse);
+                }
+                return response;
+                
+            }
+           
+            
         }
 
         public Task<ResponseGeneric<BankModel>> GetBank(string bankCode)
         {
             throw new NotImplementedException();
         }
+
+        
     }
 }

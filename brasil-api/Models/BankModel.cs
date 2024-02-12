@@ -8,7 +8,7 @@ namespace brasil_api.Models
         public string? Ispb { get; set; }
 
         [JsonPropertyName("name")]
-        public string? NomeAbreviado { get; set; }
+        public string? Nome { get; set; }
 
         [JsonPropertyName("code")]
         public int? Codigo { get; set; }
